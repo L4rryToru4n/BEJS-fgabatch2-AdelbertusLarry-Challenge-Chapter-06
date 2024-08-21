@@ -41,7 +41,7 @@ app.use(function(err, req, res, next) {
 const port = process.env.PORT;
 const HOSTNAME = '0.0.0.0';
 
-app.listen(PORT, HOSTNAME, () => {
+app.listen(port, HOSTNAME, () => {
   console.log(`Server running at http://${HOSTNAME}:${PORT}/`);
 });
 
