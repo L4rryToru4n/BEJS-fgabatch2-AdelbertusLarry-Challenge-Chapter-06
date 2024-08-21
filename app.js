@@ -39,9 +39,10 @@ app.use(function(err, req, res, next) {
 });
 
 const PORT = 5000;
+const HOSTNAME = '0.0.0.0';
 
-app.listen(PORT, () => {
-  console.log(`Listening on port ${PORT}`);
+app.listen(PORT, HOSTNAME, () => {
+  console.log(`Server running at http://${HOSTNAME}:${PORT}/`);
 });
 
 module.exports = app;

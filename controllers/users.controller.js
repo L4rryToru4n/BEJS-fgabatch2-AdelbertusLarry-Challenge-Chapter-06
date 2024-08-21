@@ -232,6 +232,7 @@ async function uploadProfilePictureToCloud(req, res) {
     });
 
     const body = req.body;
+    console.log(body);
     const user_id = req.params.id
     body.image_url = uploadFile.url;
 
