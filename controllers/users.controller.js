@@ -221,7 +221,7 @@ async function deleteProfileMedia(req, res) {
   }
 }
 
-async function uploadProfileMediaToCloud(req, res) {
+async function uploadProfilePictureToCloud(req, res) {
   try {
     const stringFile = req.file.buffer.toString('base64');
     const uploadFile = await imagekit.upload({
@@ -231,12 +231,25 @@ async function uploadProfileMediaToCloud(req, res) {
       file: stringFile
     });
 
+    const body = req.body;
+    const user_id = req.params.id
+    body.image_url = uploadFile.url;
+
+    let user = await USERS.updateUser(user_id, body);
+
+    const data = JSON.stringify(user, (key, value) =>
+      typeof value === "bigint" ? value.toString() + "n" : value
+    );
+
+    const result = JSON.parse(data);
+
     return res.json({
       status: true,
       message: "success",
       data: {
-        name: uploadFile.name,
-        url: uploadFile.url,
+        name: result.name,
+        filename: uploadFile.name,
+        image_url: uploadFile.url,
         type: uploadFile.fileType
       }
     });
@@ -343,6 +356,6 @@ module.exports = {
   uploadProfileVideo,
   uploadProfileMedia,
   deleteProfileMedia,
-  uploadProfileMediaToCloud,
+  uploadProfilePictureToCloud,
   qrGenerator
 };
