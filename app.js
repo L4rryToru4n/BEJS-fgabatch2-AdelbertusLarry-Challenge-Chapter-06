@@ -38,7 +38,7 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-const PORT = 5000;
+const port = process.env.PORT;
 const HOSTNAME = '0.0.0.0';
 
 app.listen(PORT, HOSTNAME, () => {
