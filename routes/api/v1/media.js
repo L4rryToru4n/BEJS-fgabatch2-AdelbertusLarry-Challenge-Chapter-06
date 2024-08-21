@@ -24,7 +24,7 @@ const cpUpload = storage.uploadMedia.fields(
 router.post('/images/:id', storage.uploadImage.single('file'), user.uploadProfilePicture);
 router.post('/videos/:id', storage.uploadVideo.single('file'), user.uploadProfileVideo);
 router.post('/medias/:id', cpUpload, user.uploadProfileMedia);
-router.post('/imagekit', storage.uploadCloud.single('image'), user.uploadProfileMediaToCloud);
+router.post('/imagekit/:id', storage.uploadCloud.single('image'), user.uploadProfilePictureToCloud);
 router.get('/qr/:keyword', user.qrGenerator);
 
 module.exports = router;
