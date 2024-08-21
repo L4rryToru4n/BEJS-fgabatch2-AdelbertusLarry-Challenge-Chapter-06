@@ -38,11 +38,4 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-const port = process.env.PORT;
-const HOSTNAME = '0.0.0.0';
-
-app.listen(port, HOSTNAME, () => {
-  console.log(`Server running at http://${HOSTNAME}:${PORT}/`);
-});
-
 module.exports = app;
