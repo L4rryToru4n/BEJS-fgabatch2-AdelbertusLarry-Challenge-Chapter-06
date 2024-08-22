@@ -11,6 +11,8 @@ const USERS = {
         data: {
           name: body.name,
           email: body.email,
+          image_title: body.title,
+          image_description: body.description,
           image_url: body.image_url,
           video_url: body.video_url
         }
