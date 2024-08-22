@@ -39,7 +39,7 @@ app.use(function(err, req, res, next) {
 var port = 5000
 var host = '0.0.0.0';
 
-app.listen(host, port, () => {
+app.listen( port, () => {
   console.log(`Server running at http://${host}:${port}/`);
 });
 
