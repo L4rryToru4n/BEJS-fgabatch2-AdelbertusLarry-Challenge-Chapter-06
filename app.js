@@ -36,11 +36,11 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-var port = 10000
-// var host = '127.0.0.1';
+var port = 5000
+var host = '0.0.0.0';
 
 app.listen(port, () => {
-  console.log(`Server running at http://${port}/`);
+  console.log(`Server running at http://${host}:${port}/`);
 });
 
 
