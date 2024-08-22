@@ -5,8 +5,6 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/api/v1/users');
-var mediaRouter = require('./routes/api/v1/media');
 
 var app = express();
 
@@ -38,11 +36,11 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-var port = process.env.PORT;
-var host = '0.0.0.0';
+var port = 10000
+// var host = '127.0.0.1';
 
-app.listen(port, host, () => {
-  console.log(`Server running at http://${host}:${port}/`);
+app.listen(port, () => {
+  console.log(`Server running at http://${port}/`);
 });
 
 

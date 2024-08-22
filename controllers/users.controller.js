@@ -232,7 +232,6 @@ async function uploadProfilePictureToCloud(req, res) {
     });
 
     const body = req.body;
-    console.log(body);
     const user_id = req.params.id
     body.image_url = uploadFile.url;
 
@@ -250,6 +249,8 @@ async function uploadProfilePictureToCloud(req, res) {
       data: {
         name: result.name,
         filename: uploadFile.name,
+        image_title: body.title,
+        image_description: body.description,
         image_url: uploadFile.url,
         type: uploadFile.fileType
       }
@@ -266,22 +267,24 @@ async function uploadProfilePictureToCloud(req, res) {
 }
 
 async function qrGenerator(req, res) {
-  let keyword = req.params.keyword;
-  let qr_svg = qr.image(`https://www.google.com/search?q=${keyword}`, { type: 'png' });
-  qr_svg.pipe(fs.createWriteStream(`./public/images/qr_google_search_for_${keyword}.png`));
-
-  // Using buffer type A
-  let svg_string = qr.imageSync(`https://www.google.com/search?q=${keyword}`, { type: 'png', size: 4 });
-
-  // Respond buffer type A with a QR image
-  // res.writeHead(200, {
-  //   'Content-Type': 'image/png',
-  //   'Content-Length': svg_string.length
-  // });
-
-  // res.end(svg_string);
-
+  
   try {
+    let keyword = req.params.keyword;
+    // let qr_svg = qr.image(`https://www.google.com/search?q=${keyword}`, { type: 'png' });
+    // qr_svg.pipe(fs.createWriteStream(`./public/images/qr_google_search_for_${keyword}.png`));
+
+    // Using buffer type A
+    let svg_string = qr.imageSync(`https://www.google.com/search?q=${keyword}`, { type: 'png', size: 4 });
+
+    // Respond buffer type A with a QR image
+    // res.writeHead(200, {
+    //   'Content-Type': 'image/png',
+    //   'Content-Length': svg_string.length
+    // });
+
+    // res.end(svg_string);
+
+  
     const stringFile = svg_string.toString('base64');
     const uploadFile = await imagekit.upload({
       fileName: `qr_google_search_for_${keyword}.png`,
@@ -313,13 +316,13 @@ async function qrGenerator(req, res) {
   // Upload the buffer image to the ImageKit
 
   // Using buffer type B
-  let chunks = [];
+  // let chunks = [];
   
-  let value_qr = {
-    name: "qrtest",
-    value: 100,
-    keyword: keyword
-  };
+  // let value_qr = {
+  //   name: "qrtest",
+  //   value: 100,
+  //   keyword: keyword
+  // };
 
   // const qrStream = qr.image(JSON.stringify(value_qr), { type: 'png' });
 
