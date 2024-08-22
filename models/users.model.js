@@ -2,6 +2,8 @@ const { PrismaClient, Prisma } = require('@prisma/client');
 const client = new PrismaClient();
 
 const USERS = {
+  // TODO: create getUser function
+  
   updateUser: async (id, body) => {
     try {
       let result = await client.users.update({
