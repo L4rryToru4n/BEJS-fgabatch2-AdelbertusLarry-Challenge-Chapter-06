@@ -38,4 +38,12 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+var port = process.env.PORT;
+var host = '0.0.0.0';
+
+app.listen(port, host, () => {
+  console.log(`Server running at http://${host}:${port}/`);
+});
+
+
 module.exports = app;
