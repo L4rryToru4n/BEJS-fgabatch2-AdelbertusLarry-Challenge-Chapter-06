@@ -103,7 +103,7 @@ async function getProfileMedias(req, res) {
   } catch (err) {
     return res.status(404).json({
       "status": false,
-      "message": "No user has been found."
+      "message": "No user or medias have been found."
     });
   }
 }
@@ -130,6 +130,42 @@ async function getProfileMediaDetail(req, res) {
       "status": false,
       "message": "No user has been found or media have been found"
     });
+  }
+}
+
+async function updateProfileMedia(req, res) {
+  try {
+    const user_id = req.params.user_id;
+    const id = req.params.id
+    const body = req.body;
+    let media = await MEDIAS.updateMedia(user_id, id, body);
+
+    const data = JSON.stringify(media, (key, value) =>
+      typeof value === "bigint" ? value.toString() + "n" : value
+    );
+
+    const temp = JSON.parse(data);
+
+    const result = {
+      "status": true,
+      "data": temp
+    }
+
+    return res.status(200).json(result);
+  }
+  catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError) {
+      if (err.code === 'P2025') {
+        return res.status(404).json({
+          status: false,
+          message: "No such user or media has been found."
+        });
+      }
+      return res.status(400).json({
+        status: false,
+        message: `Update media failed. ${err.message}`
+      });
+    }
   }
 }
 
@@ -532,6 +568,7 @@ module.exports = {
   uploadProfileVideo,
   getProfileMedias,
   getProfileMediaDetail,
+  updateProfileMedia,
   uploadProfileMedia,
   deleteProfileMedia,
   uploadMediaToCloud,

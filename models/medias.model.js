@@ -16,6 +16,7 @@ const MEDIAS = {
           type: true,
           url: true,
           title: true,
+          description: true
         }
       });
 
@@ -43,6 +44,31 @@ const MEDIAS = {
       });
       return result;
     } catch (err) {
+      if (err instanceof Prisma.PrismaClientValidationError) {
+        console.error(err.message);
+      }
+      throw err;
+    }
+  },
+  updateMedia: async (user_id, id, body) => {
+    try {
+      let title = body.title;
+      let description = body.description;
+
+      let result = await client.medias.update({
+        where: {
+          user_id: Number(user_id),
+          id: Number(id)
+        },
+        data: {
+          title: title,
+          description: description
+        }
+      });
+
+      return result;
+    }
+    catch (err) {
       if (err instanceof Prisma.PrismaClientValidationError) {
         console.error(err.message);
       }
