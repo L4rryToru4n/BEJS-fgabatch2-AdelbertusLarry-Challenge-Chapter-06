@@ -27,6 +27,7 @@ router.post('/medias/:id', cpUpload, user.uploadProfileMedia);
 router.post('/imagekit/:user_id', storage.uploadCloud.single('image'), user.uploadMediaToCloud);
 router.get('/:user_id', user.getProfileMedias);
 router.get('/detail/:user_id/:id', user.getProfileMediaDetail);
+router.put('/update/:user_id/:id', user.updateProfileMedia);
 router.get('/qr/:keyword', user.qrGenerator);
 router.delete('/delete/:user_id/:id', user.deleteMediaInCloud);
 
