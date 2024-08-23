@@ -24,7 +24,10 @@ const cpUpload = storage.uploadMedia.fields(
 router.post('/images/:id', storage.uploadImage.single('file'), user.uploadProfilePicture);
 router.post('/videos/:id', storage.uploadVideo.single('file'), user.uploadProfileVideo);
 router.post('/medias/:id', cpUpload, user.uploadProfileMedia);
-router.post('/imagekit/:id', storage.uploadCloud.single('image'), user.uploadProfilePictureToCloud);
+router.post('/imagekit/:user_id', storage.uploadCloud.single('image'), user.uploadMediaToCloud);
+router.get('/:user_id', user.getProfileMedias);
+router.get('/detail/:user_id/:id', user.getProfileMediaDetail);
 router.get('/qr/:keyword', user.qrGenerator);
+router.delete('/delete/:user_id/:id', user.deleteMediaInCloud);
 
 module.exports = router;

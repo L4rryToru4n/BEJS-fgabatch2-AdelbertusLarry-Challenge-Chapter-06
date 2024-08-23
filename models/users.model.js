@@ -11,9 +11,7 @@ const USERS = {
         select: {
           id: true,
           name: true,
-          email: true,
-          image_url: true,
-          video_url: true,
+          email: true
         }
       });
 
@@ -34,8 +32,11 @@ const USERS = {
           id: true,
           name: true,
           email: true,
-          image_url: true,
-          video_url: true,
+          medias: {
+            select: {
+              title: true
+            }
+          }
         }
       });
       return result;
@@ -68,11 +69,7 @@ const USERS = {
         },
         data: {
           name: body.name,
-          email: body.email,
-          image_title: body.title,
-          image_description: body.description,
-          image_url: body.image_url,
-          video_url: body.video_url
+          email: body.email
         }
       });
       return result;

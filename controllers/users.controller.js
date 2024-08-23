@@ -1,5 +1,6 @@
 const { Prisma } = require('@prisma/client');
 const USERS = require('../models/users.model');
+const MEDIAS = require('../models/medias.model');
 const imagekit = require('../config/imagekitconf');
 const qr = require('node-qr-image');
 const path = require('path');
@@ -77,6 +78,57 @@ async function createUser(req, res) {
     return res.status(400).json({
       "status": false,
       "message": "Create user failed. Please complete your data request."
+    });
+  }
+}
+
+async function getProfileMedias(req, res) {
+  try {
+    const user_id = req.params.user_id;
+    let media = await MEDIAS.getMedias(user_id);
+
+    const data = JSON.stringify(media, (key, value) =>
+      typeof value === "bigint" ? value.toString() + "n" : value
+    );
+
+    const temp = JSON.parse(data);
+
+    const result = {
+      "status": true,
+      "data": temp
+    }
+
+    return res.status(200).json(result);
+
+  } catch (err) {
+    return res.status(404).json({
+      "status": false,
+      "message": "No user has been found."
+    });
+  }
+}
+
+async function getProfileMediaDetail(req, res) {
+  try {
+    const user_id = req.params.user_id;
+    const id = req.params.id;
+    let media = await MEDIAS.getMedia(user_id, id);
+
+    const file_Id = media.imagekit_fileId;
+    
+    const imagekit_filedetails = await imagekit.getFileDetails(`${file_Id}`);
+
+    const result = {
+      status: true,
+      data: imagekit_filedetails
+    }
+
+    return res.status(200).json(result);
+
+  } catch (err) {
+    return res.status(404).json({
+      "status": false,
+      "message": "No user has been found or media have been found"
     });
   }
 }
@@ -270,7 +322,7 @@ async function deleteProfileMedia(req, res) {
     body.video_title = null;
     body.video_description = null;
 
-    let user = await USERS.updateUser(user_id, body);
+    await USERS.updateUser(user_id, body);
 
     const result = {
       status: true,
@@ -294,37 +346,42 @@ async function deleteProfileMedia(req, res) {
   }
 }
 
-async function uploadProfilePictureToCloud(req, res) {
+async function uploadMediaToCloud(req, res) {
   try {
     const stringFile = req.file.buffer.toString('base64');
     const uploadFile = await imagekit.upload({
       fileName: req.file.originalname,
       folder: '/users-assets',
       tags: ["users-media"],
-      file: stringFile
+      file: stringFile,
+      transformation: {
+        pre: 'l-text,i-Imagekit,fs-50,l-end',
+        post: [
+          {
+            type: 'transformation',
+            value: 'h-100,w-100'
+          }
+        ]
+      }
     });
 
     const body = req.body;
-    const user_id = req.params.id
-    body.image_url = uploadFile.url;
+    const user_id = req.params.user_id;
+    body.imagekit_fileId = uploadFile.fileId;
+    body.type = uploadFile.fileType;
+    body.url = uploadFile.url;
 
-    let user = await USERS.updateUser(user_id, body);
+    await MEDIAS.uploadMedia(user_id, body);
 
-    const data = JSON.stringify(user, (key, value) =>
-      typeof value === "bigint" ? value.toString() + "n" : value
-    );
-
-    const result = JSON.parse(data);
-
-    return res.json({
+    return res.status(201).json({
       status: true,
       message: "success",
       data: {
-        name: result.name,
+        imagekit_fileId: uploadFile.fileId,
         filename: uploadFile.name,
-        image_title: body.title,
-        image_description: body.description,
-        image_url: uploadFile.url,
+        title: body.title,
+        description: body.description,
+        url: uploadFile.url,
         type: uploadFile.fileType
       }
     });
@@ -336,6 +393,48 @@ async function uploadProfilePictureToCloud(req, res) {
       status: false,
       message: `Cloud upload failed. ${err.message}`
     });
+  }
+}
+
+async function deleteMediaInCloud (req, res) {
+  try {
+    const user_id = req.params.user_id;
+    const id = req.params.id;
+
+    const imagekit_media_detail = await MEDIAS.getMedia(user_id, id);
+    const imagekit_fileId = imagekit_media_detail.imagekit_fileId;
+    const imagekit_full_url = imagekit_media_detail.url;
+    
+    const imagekit_file_details = await imagekit.getFileDetails(`${imagekit_fileId}`);
+    
+    await MEDIAS.deleteMedia(user_id, id);
+    await imagekit.deleteFile(`${imagekit_fileId}`);
+    await imagekit.purgeCache(`${imagekit_full_url}`);
+
+    return res.status(200).json({
+      status: true,
+      message: "Deletion successful",
+      data: {
+        url: imagekit_media_detail.url,
+        filename: imagekit_file_details.name,
+        mime_type: imagekit_file_details.mime
+      }
+    });
+  }
+  catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError) {
+      if (err.code === 'P2025') {
+        return res.status(404).json({
+          "status": false,
+          "message": "No such media has been found."
+        });
+      }
+      console.error(err);
+      return res.status(400).json({
+        status: false,
+        message: `Cloud upload failed. ${err.message}`
+      });
+    }
   }
 }
 
@@ -431,9 +530,12 @@ async function qrGenerator(req, res) {
 module.exports = {
   uploadProfilePicture,
   uploadProfileVideo,
+  getProfileMedias,
+  getProfileMediaDetail,
   uploadProfileMedia,
   deleteProfileMedia,
-  uploadProfilePictureToCloud,
+  uploadMediaToCloud,
+  deleteMediaInCloud,
   qrGenerator,
   getUsers,
   getUser,
