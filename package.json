@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@prisma/client": "^5.18.0",
+    "@sentry/cli": "^2.33.1",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "dotenv": "^16.4.5",
